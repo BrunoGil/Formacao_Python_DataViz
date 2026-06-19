@@ -22,19 +22,23 @@ def main() -> None:
 
     # Q1: Which region has the highest total profit?
     # TODO: groupby region, sum profit, .idxmax()
+    q1 = df.groupby("region")["profit"].sum().idxmax()
     print("Q1 — most profitable region:", q1)
 
     # Q2: Which sub_category has the LOWEST total profit (maybe even a loss)?
     # TODO: groupby sub_category, sum profit, .idxmin()
+    q2 = df.groupby("sub_category")["profit"].sum().idxmin()
     print("Q2 — least profitable sub-category:", q2)
 
     # Q3: What is the average shipping time (days) per ship_mode?
-    # TODO: groupby ship_mode, mean of shipping_days
+    # TODO: groupby ship_mode, mean of shipping_days.
+    q3 = df.groupby("ship_mode")["shipping_days"].mean()
     print("Q3 — average shipping days by mode:")
     print(q3)
 
     # Q4: Which customer segment generates the most sales?
     # TODO: groupby segment, sum sales, .idxmax()
+    q4 = df.groupby("segment")["sales"].sum().idxmax()
     print("Q4 — top segment by sales:", q4)
 
     # Q5: Which month (1-12) had the highest total sales?

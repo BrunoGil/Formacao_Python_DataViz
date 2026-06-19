@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-CLEAN = Path("output/clean.csv")
+CLEAN = Path("/workspaces/Formacao_Python_DataViz/output/clean.csv")
 OUT_DIR = Path("output")
 
 
@@ -24,25 +24,43 @@ def load_clean() -> pd.DataFrame:
 def add_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Add two useful business metrics."""
     # TODO: add a column 'profit_margin' = profit as a fraction of sales
+    df["profit_margin"] = df["profit"] / df["sales"]
     # TODO: add a column 'shipping_days' = number of days between order_date and ship_date
+    df["shipping_days"] = (df["ship_date"] - df["order_date"]).dt.days
     return df
 
 
 def sales_by_region(df: pd.DataFrame) -> pd.DataFrame:
     """Total sales and profit per region, biggest sales first."""
     # TODO: groupby region, sum sales+profit, sort by sales descending; assign to `result`
+    result = (
+            df.groupby("region")[["sales", "profit"]]
+            .sum()
+            .sort_values(by="sales", ascending=False)
+        )
     return result
 
 
 def sales_by_category(df: pd.DataFrame) -> pd.Series:
     """Total sales per category and sub_category, biggest first."""
     # TODO: groupby category & sub_category, sum sales, sort descending; assign to `result`
+    result = (
+            df.groupby(["category", "sub_category"])["sales"]
+            .sum()
+            .sort_values(ascending=False)
+        )
     return result
 
 
 def top_products(df: pd.DataFrame, n: int = 10) -> pd.Series:
     """The n products with the highest total sales."""
     # TODO: groupby product_name, sum sales, sort descending, take head(n); assign to `result`
+    result = (
+            df.groupby("product_name")["sales"]
+            .sum()
+            .sort_values(ascending=False)
+            .head(n)
+        )
     return result
 
 

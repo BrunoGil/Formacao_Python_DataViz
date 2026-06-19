@@ -17,46 +17,61 @@ OUT = Path("output/clean.csv")
 
 def load_raw() -> pd.DataFrame:
     # TODO: read RAW into `df` with pandas, encoding="latin-1" (the file is Windows-encoded)
+    df = pd.read_csv(RAW, encoding="latin-1")
     return df
 
 
 def tidy_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Turn 'Order Date' into 'order_date' so columns are easy to type."""
     # TODO: lower-case the columns, strip spaces, replace ' ' and '-' with '_'
+    df.columns = (
+        df.columns.str.lower()
+        .str.strip()
+        .str.replace(" ", "_", regex=False)
+        .str.replace("-", "_", regex=False)
+    )
     return df
 
 
 def parse_dates(df: pd.DataFrame) -> pd.DataFrame:
     """The dates arrive as text like '11/8/2023' — make them real dates."""
     # TODO: pd.to_datetime on order_date and ship_date with format="%m/%d/%Y"
+    df["order_date"] = pd.to_datetime(df["order_date"], format="%m/%d/%Y")
+    df["ship_date"] = pd.to_datetime(df["ship_date"], format="%m/%d/%Y")
+
     return df
 
 
 def drop_unneeded(df: pd.DataFrame) -> pd.DataFrame:
     """row_id is just a counter and country is always 'United States'."""
     # TODO: drop columns row_id and country (use errors="ignore")
+    df = df.drop(columns=["row_id", "country"], errors="ignore")
     return df
 
 
 def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     # TODO: drop exact duplicate rows
+    df = df.drop_duplicates()
     return df
 
 
 def drop_empty_rows(df: pd.DataFrame) -> pd.DataFrame:
     """Some exports include blank rows with no real data — drop them."""
     # TODO: drop rows that have no sales value (dropna with subset=["sales"])
+    df = df.dropna(subset=["sales"])
     return df
 
 
 def fix_missing(df: pd.DataFrame) -> pd.DataFrame:
     """Some rows (Burlington, Vermont) have no postal_code."""
     # TODO: fill missing postal_code with 0, then cast the column to int
+    df["postal_code"] = df["postal_code"].fillna(0).astype(int)
     return df
 
 
 def main() -> None:
     df = load_raw()
+    print(df)
     df = tidy_columns(df)
     df = parse_dates(df)
     df = drop_unneeded(df)
